@@ -306,16 +306,6 @@ fired; however, key moved events might occur independently.
 Updating the search area can be helpful in cases such as when you need to update
 the query to the new visible map area after a user scrolls.
 
-
-## Deployment
-- In your local environment set `$BINTRAY_USER` and `$BINTRAY_KEY` to your
-  Bintray.com username and API key.
-- Checkout and update the master branch.
-- Run `./release.sh` to build and deploy.
-- On bintray.com, publish the draft artifacts.
-- Update [firebase-versions](https://github.com/firebase/firebase-clients/blob/master/versions/firebase-versions.json) with the changelog from this version
-- tweet the release
-
 ## API Reference
 
 [A full API reference is available here](https://geofire-java.firebaseapp.com/docs/).
@@ -327,5 +317,5 @@ If you want to contribute to GeoFire for Java, clone the repository
 and just start making pull requests.
 
 ```bash
-git clone https://github.com/firebase/geofire-java.git
+git clone https://github.com/umarhussain15/geofire-android.git
 ```
