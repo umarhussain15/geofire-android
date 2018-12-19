@@ -1,0 +1,21 @@
+*.iml
+.gradle
+/local.properties
+.idea
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+
+# Maven
+target
+
+# Other
+/site/docs
+
+# Credentials / Releasing
+service-account.json
+release.properties
+*.xml.releaseBackup
+*.xml.tag
+*.xml.next
