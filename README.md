@@ -14,11 +14,11 @@ data storage, allowing query results to be updated in realtime as they change.
 GeoFire *selectively loads only the data near certain locations, keeping your
 applications light and responsive*, even with extremely large datasets.
 
-A compatible GeoFire client is also available for [Objective-C](https://github.com/firebase/geofire-objc)
+A compatible GeoFire client is also available for [Java](https://github.com/firebase/geofire-java), [Objective-C](https://github.com/firebase/geofire-objc)
 and [JavaScript](https://github.com/firebase/geofire-js).
 
 For a full example of an application using GeoFire to display realtime transit data, see the
-[SFVehicles](https://github.com/firebase/geofire-java/tree/master/examples/SFVehicles) example in
+[SFVehicles](https://github.com/umarhussain15/geofire-android/tree/master/sfvehiclesexample) example in
 Android app in this repo.
 
 ### Integrating GeoFire with your data
@@ -62,10 +62,6 @@ and [read our docs for more information about indexing your data](https://www.fi
 In order to use GeoFire in your project, you need to [add the Firebase Android
 SDK](https://firebase.google.com/docs/android/setup). After that you can include GeoFire with one of the choices below.
 
-Note that after version `1.1.1` the artifact `com.firebase:geofire` is no
-longer updated and has been replaced by the separate Android and Java
-artifacts as described below.
-
 ### Gradle
 
 Add a dependency for GeoFire to your `gradle.build` file.
@@ -79,13 +75,6 @@ dependencies {
 ```
 
 For non-Android Java applications:
-
-```groovy
-dependencies {
-    compile 'com.firebase:geofire-java:2.3.1'
-}
-
-```
 
 ## Getting Started with Firebase
 
@@ -131,9 +120,9 @@ geoFire.setLocation("firebase-hq", new GeoLocation(37.7853889, -122.4056973), ne
     @Override
     public void onComplete(String key, FirebaseError error) {
         if (error != null) {
-            System.err.println("There was an error saving the location to GeoFire: " + error);
+            Log.e("SF","There was an error saving the location to GeoFire: " + error);
         } else {
-            System.out.println("Location saved on server successfully!");
+            Log.d("SF","Location saved on server successfully!");
         }
     }
 });
@@ -154,15 +143,15 @@ geoFire.getLocation("firebase-hq", new LocationCallback() {
     @Override
     public void onLocationResult(String key, GeoLocation location) {
         if (location != null) {
-            System.out.println(String.format("The location for key %s is [%f,%f]", key, location.latitude, location.longitude));
+            Log.d("SF",String.format("The location for key %s is [%f,%f]", key, location.latitude, location.longitude));
         } else {
-            System.out.println(String.format("There is no location for key %s in GeoFire", key));
+            Log.d("SF",String.format("There is no location for key %s in GeoFire", key));
         }
     }
 
     @Override
     public void onCancelled(DatabaseError databaseError) {
-        System.err.println("There was an error getting the GeoFire location: " + databaseError);
+        Log.e("SF","There was an error getting the GeoFire location: " + databaseError);
     }
 });
 ```
@@ -215,27 +204,27 @@ To listen for events you must add a `GeoQueryEventListener` to the `GeoQuery`:
 geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
     @Override
     public void onKeyEntered(String key, GeoLocation location) {
-        System.out.println(String.format("Key %s entered the search area at [%f,%f]", key, location.latitude, location.longitude));
+        Log.d("SF",String.format("Key %s entered the search area at [%f,%f]", key, location.latitude, location.longitude));
     }
 
     @Override
     public void onKeyExited(String key) {
-        System.out.println(String.format("Key %s is no longer in the search area", key));
+        Log.d("SF",String.format("Key %s is no longer in the search area", key));
     }
 
     @Override
     public void onKeyMoved(String key, GeoLocation location) {
-        System.out.println(String.format("Key %s moved within the search area to [%f,%f]", key, location.latitude, location.longitude));
+        Log.d("SF",String.format("Key %s moved within the search area to [%f,%f]", key, location.latitude, location.longitude));
     }
 
     @Override
     public void onGeoQueryReady() {
-        System.out.println("All initial data has been loaded and events have been fired!");
+        Log.d("SF","All initial data has been loaded and events have been fired!");
     }
 
     @Override
     public void onGeoQueryError(DatabaseError error) {
-        System.err.println("There was an error with this query: " + error);
+        Log.e("SF","There was an error with this query: " + error);
     }
 });
 ```
