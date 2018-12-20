@@ -44,40 +44,22 @@ about the bars, you can load the information for each bar returned by the query
 at `/bars/<bar-id>`.
 
 
-## Upgrading GeoFire
-
-### Upgrading from GeoFire 1.x to 2.x
-
-GeoFire 2.x is based on the new 3.x release of [Firebase](https://firebase.google.com).
-
-### Upgrading from GeoFire 1.0.x to 1.1.x
-
-With the release of GeoFire for Android/Java 1.1.0, this library now uses [the new query
-functionality found in Firebase 2.0.0](https://www.firebase.com/blog/2014-11-04-firebase-realtime-queries.html).
-As a result, you will need to upgrade to Firebase 2.x.x and add a new `.indexOn` rule to your
-Security and Firebase Rules to get the best performance. You can view [the updated rules
-here](https://github.com/firebase/geofire-js/blob/master/examples/securityRules/rules.json)
-and [read our docs for more information about indexing your data](https://www.firebase.com/docs/security/guide/indexing-data.html).
-
-
-## Including GeoFire in your project Android/Java
+## Including GeoFire in your Android Project
 
 In order to use GeoFire in your project, you need to [add the Firebase Android
-SDK](https://firebase.google.com/docs/android/setup). After that you can include GeoFire with one of the choices below.
+SDK](https://firebase.google.com/docs/android/setup). After that you can include GeoFire with gradle:
 
 ### Gradle
 
-Add a dependency for GeoFire to your `gradle.build` file.
+Add a dependency for GeoFire to your `app/build.gradle` file.
 
-For Android applications:
 
 ```groovy
 dependencies {
-    compile 'com.firebase:geofire-android:2.3.1'
+    implementation 'com.github.umarhussain15:geofire-android:1.0.0-alpha'
 }
 ```
 
-For non-Android Java applications:
 
 ## Getting Started with Firebase
 
