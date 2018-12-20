@@ -1,7 +1,8 @@
 # GeoFire for Android — Realtime location queries with Firebase
-
+[![](https://jitpack.io/v/umarhussain15/geofire-android.svg)](https://jitpack.io/#umarhussain15/geofire-android)
 <!--[![Build Status](https://travis-ci.org/firebase/geofire-java.svg?branch=master)](https://travis-ci.org/firebase/geofire-java?branch=master)-->
->__*This Library is based on geofire-java library which targets both Android and Java. This library is only for Android use. You can see the original library here: https://github.com/firebase/geofire-java*__
+>__*This Library is based on geofire-java library which targets both Android and Java.
+This library is only for Android use. You can see the original library here: https://github.com/firebase/geofire-java*__
 
 
 
