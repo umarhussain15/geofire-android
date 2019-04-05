@@ -7,22 +7,40 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
+
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.Rule;
 import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
+import org.robolectric.Robolectric;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
+import org.robolectric.fakes.RoboWebSettings;
+import org.robolectric.shadows.ShadowAndroidHttpClient;
+import org.robolectric.shadows.httpclient.FakeHttp;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
-@RunWith(JUnit4.class)
+import androidx.test.core.app.ApplicationProvider;
+
+@RunWith(RobolectricTestRunner.class)
+@Config(manifest = Config.NONE)
 public class GeoFireIT {
     static final String DATABASE_URL = "https://carouselapplication.firebaseio.com/";
 
-    @Rule public final GeoFireTestingRule geoFireTestingRule = new GeoFireTestingRule(DATABASE_URL);
+    public final GeoFireTestingRule geoFireTestingRule = new GeoFireTestingRule(ApplicationProvider.getApplicationContext(), DATABASE_URL);
+
+    @Before
+    public void setup (){
+        FakeHttp.getFakeHttpLayer().interceptHttpRequests(false);
+        FakeHttp.getFakeHttpLayer().interceptResponseContent(false);
+    }
 
     @Test
     public void geoFireSetsLocations() throws InterruptedException, ExecutionException, TimeoutException {
@@ -58,7 +76,7 @@ public class GeoFireIT {
             put("g", "400th7z6gs");
         }});
         Object result = future.get(geoFireTestingRule.timeout, TimeUnit.SECONDS);
-        Assert.assertEquals(expected, ((DataSnapshot)result).getValue());
+        Assert.assertEquals(expected, ((DataSnapshot) result).getValue());
     }
 
     @Test
@@ -110,8 +128,8 @@ public class GeoFireIT {
         semaphore.tryAcquire(geoFireTestingRule.timeout, TimeUnit.SECONDS);
 
         geoFireTestingRule.setValueAndWait(geoFire.getDatabaseRefForKey("loc2"), new HashMap<String, Object>() {{
-           put("l", 10);
-           put("g", "abc");
+            put("l", 10);
+            put("g", "abc");
         }});
 
         geoFire.getLocation("loc2", new LocationCallback() {

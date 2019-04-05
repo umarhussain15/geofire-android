@@ -1,10 +1,7 @@
 package com.firebase.geofire.android.testing;
 
+import android.content.Context;
 import android.util.Log;
-
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import com.firebase.geofire.android.GeoFire;
 import com.firebase.geofire.android.GeoLocation;
@@ -15,26 +12,34 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import java.io.FileInputStream;
-import java.io.IOException;
+
+import org.junit.rules.TestWatcher;
+import org.junit.runner.Description;
+
+import java.util.Date;
 import java.util.Random;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import org.junit.rules.TestWatcher;
-import org.junit.runner.Description;
-import org.slf4j.impl.SimpleLogger;
+
+import androidx.test.core.app.ApplicationProvider;
+
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * This is a JUnit rule that can be used for hooking up Geofire with a real database instance.
  */
-public final class GeoFireTestingRule extends TestWatcher {
+public final class GeoFireTestingRule {
 
     static final long DEFAULT_TIMEOUT_SECONDS = 5;
 
     private static final String ALPHA_NUM_CHARS = "abcdefghijklmnopqrstuvwxyz0123456789";
 
-    private static final String SERVICE_ACCOUNT_CREDENTIALS = "service-account.json";
+    private static final String API_KEY= "**YOUR-API-key**";
+    private static final String APP_ID= "com.firebase.sfvehiclesexample";
+    private static final String PROJECT_ID= "**PROJECT-ID**";
 
     private DatabaseReference databaseReference;
 
@@ -43,30 +48,35 @@ public final class GeoFireTestingRule extends TestWatcher {
     /** Timeout in seconds. */
     public final long timeout;
 
-    public GeoFireTestingRule(final String databaseUrl) {
-        this(databaseUrl, DEFAULT_TIMEOUT_SECONDS);
+    public GeoFireTestingRule(final Context context,final String databaseUrl) {
+        this(context,databaseUrl, DEFAULT_TIMEOUT_SECONDS);
     }
 
-    public GeoFireTestingRule(final String databaseUrl, final long timeout) {
+    public GeoFireTestingRule(final Context context, final String databaseUrl, final long timeout) {
         this.databaseUrl = databaseUrl;
         this.timeout = timeout;
-    }
+        FirebaseApp app= FirebaseApp.initializeApp(context,
+                new FirebaseOptions.Builder()
+                        .setDatabaseUrl(this.databaseUrl)
+                        .setApiKey(API_KEY)
+                        .setApplicationId(APP_ID)
+                        .setProjectId(PROJECT_ID)
+                        .build(),"GeoFireTest"
+        );
+        this.databaseReference = FirebaseDatabase.getInstance(app).getReference();
 
-    @Override
-    public void starting(Description description) {
-
-        this.databaseReference = FirebaseDatabase.getInstance().getReference();
-        Log.d("Test",this.databaseReference.toString());
+        this.databaseReference.child("geofire").child("test").setValue(new Date().getTime());
+        System.out.println(this.databaseReference.getPath().toString());
     }
 
     /** This will return you a new Geofire instance that can be used for testing. */
     public GeoFire newTestGeoFire() {
-        return new GeoFire(databaseReference.child(randomAlphaNumericString(16)));
+        return new GeoFire(databaseReference.child("geofire"));
     }
 
     /**
      * Sets a given location key from the latitude and longitude on the provided Geofire instance.
-     * This operation will run asychronously.
+     * This operation will run asynchronously.
      */
     public void setLocation(GeoFire geoFire, String key, double latitude, double longitude) {
         setLocation(geoFire, key, latitude, longitude, false);
@@ -74,7 +84,7 @@ public final class GeoFireTestingRule extends TestWatcher {
 
     /**
      * Removes a location on the provided Geofire instance.
-     * This operation will run asychronously.
+     * This operation will run asynchronously.
      */
     public void removeLocation(GeoFire geoFire, String key) {
         removeLocation(geoFire, key, false);
@@ -86,6 +96,7 @@ public final class GeoFireTestingRule extends TestWatcher {
         databaseReference.setValue(value, new DatabaseReference.CompletionListener() {
             @Override
             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                System.out.println(databaseError);
                 futureError.put(databaseError);
             }
         });
@@ -94,7 +105,7 @@ public final class GeoFireTestingRule extends TestWatcher {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         } catch (TimeoutException e) {
-            fail("Timeout occured!");
+            fail("Timeout occurred!");
         }
     }
 
@@ -107,6 +118,7 @@ public final class GeoFireTestingRule extends TestWatcher {
         geoFire.setLocation(key, new GeoLocation(latitude, longitude), new GeoFire.CompletionListener() {
             @Override
             public void onComplete(String key, DatabaseError error) {
+                System.out.println(error);
                 futureError.put(error);
             }
         });
@@ -159,14 +171,9 @@ public final class GeoFireTestingRule extends TestWatcher {
             }
         });
 
-        assertTrue("Timeout occured!", semaphore.tryAcquire(timeout, TimeUnit.SECONDS));
+        assertTrue("Timeout occurred!", semaphore.tryAcquire(timeout, TimeUnit.SECONDS));
     }
 
-    @Override
-    public void finished(Description description) {
-        this.databaseReference.setValue(null);
-        this.databaseReference = null;
-    }
 
     private static String randomAlphaNumericString(int length) {
         StringBuilder sb = new StringBuilder();

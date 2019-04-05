@@ -22,9 +22,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import androidx.test.core.app.ApplicationProvider;
+
 @RunWith(JUnit4.class)
 public class GeoQueryIT {
-    @Rule public final GeoFireTestingRule geoFireTestingRule = new GeoFireTestingRule(DATABASE_URL);
+    @Rule public final GeoFireTestingRule geoFireTestingRule = new GeoFireTestingRule(ApplicationProvider.getApplicationContext(),DATABASE_URL);
 
     @Test
     public void keyEntered() throws InterruptedException {
