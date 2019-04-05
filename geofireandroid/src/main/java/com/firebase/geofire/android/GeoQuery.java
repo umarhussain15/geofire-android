@@ -168,16 +168,22 @@ public class GeoQuery {
         this.locationInfos.put(key, newInfo);
     }
 
-    private boolean geoHashQueriesContainGeoHash(GeoHash geoHash) {
+    /**
+     * Verifies that given geoHash is not present in any queries
+     * @param geoHash   object to find in all the queries
+     * @return  Returns true if geoHash is not present in any query. Returns false if any instance is
+     * present.
+     */
+    private boolean geoHashNotPresentInGeoHashQueries(GeoHash geoHash) {
         if (this.queries == null) {
-            return false;
+            return true;
         }
         for (GeoHashQuery query: this.queries) {
             if (query.containsGeoHash(geoHash)) {
-                return true;
+                return false;
             }
         }
-        return false;
+        return true;
     }
 
     private void reset() {
@@ -269,7 +275,7 @@ public class GeoQuery {
         Iterator<Map.Entry<String, LocationInfo>> it = this.locationInfos.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<String, LocationInfo> entry = it.next();
-            if (!this.geoHashQueriesContainGeoHash(entry.getValue().geoHash)) {
+            if (this.geoHashNotPresentInGeoHashQueries(entry.getValue().geoHash)) {
                 it.remove();
             }
         }
@@ -305,7 +311,7 @@ public class GeoQuery {
                     synchronized(GeoQuery.this) {
                         GeoLocation location = GeoFire.getLocationValue(dataSnapshot);
                         GeoHash hash = (location != null) ? new GeoHash(location) : null;
-                        if (hash == null || !GeoQuery.this.geoHashQueriesContainGeoHash(hash)) {
+                        if (hash == null || GeoQuery.this.geoHashNotPresentInGeoHashQueries(hash)) {
                             final LocationInfo info = locationInfos.remove(key);
 
                             if (info != null && info.inGeoQuery) {
